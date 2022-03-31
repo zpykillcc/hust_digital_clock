@@ -19,9 +19,9 @@
 //
 //////////////////////////////////////////////////////////////////////////////////
 //分频得到1khz和1hz
-module frequency_divider(clk_1hz, clk_100M);
+module frequency_divider(clk_1hz, clk_1khz, clk_100M);
 	input clk_100M;
-	output clk_1hz;
+	output clk_1hz, clk_1khz;
 	reg[16:0] count1;
 	reg[9:0] count2;
 	reg clk_1khz, clk_1hz;
