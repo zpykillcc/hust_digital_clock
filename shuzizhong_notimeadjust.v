@@ -18,8 +18,9 @@
 // Additional Comments: 
 //
 //////////////////////////////////////////////////////////////////////////////////
-module digital_clock(clk_100M, select, y);
+module digital_clock(clk_100M, select, y , h,min);
 	input clk_100M;
+	input h, min;
 	output[7:0] y;
 	output[7:0] select;
 	reg[16:0] count;
@@ -30,6 +31,8 @@ module digital_clock(clk_100M, select, y);
 	//clk_100M是100M的时钟信号select是控制数码管亮暗的使能端，y是七段译码器的输出端
 	//count用于记录时钟走过的秒数，clk_1hz是分频后1hz的时钟信号
 	//s0~h1记录秒、分、时的个十位
+	//h、min分别为分钟和小时校时
+	
 	
 	//分频器获得1hz和1khz时钟信号，输入输出必须为wire型
 	frequency_divider fred(clk_1hz, clk_1khz, clk_100M);
@@ -37,9 +40,16 @@ module digital_clock(clk_100M, select, y);
 	initial count = 0;
 	always@(posedge clk_1hz)
 		begin
-			if(count != 17'd86399)
-				count <= count + 1;
-			else count <= 0;
+			case({h,min})
+				2'b01: count <= count + 6'd60;//分钟校时
+				2'b10: count <= count + 12'd3600;//小时校时
+				2'b00:
+					begin
+						if(count != 17'd86399) count <= count + 1;
+						else count <= 0;
+					end
+				2'b11: count <= count;
+			endcase
 		end
 	//获得当前时间的时分秒各位数
 	time_count t(count, s0, s1, m0, m1, h0, h1);
